@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 import UIKit
 
 final class FrameMonitor {
@@ -16,12 +17,14 @@ final class FrameMonitor {
     private var frameCount = 0
 
     private var overlay: FPSOverlay?
+    
+    private let logger = Logger(subsystem: "com.leomodro.FrameWatch", category: "FrameMonitor")
 
     private init() {}
 
     func start() {
         guard displayLink == nil else { return }
-
+        
         if FrameWatch.configuration.showOverlay {
             overlay = FPSOverlay()
             overlay?.show()
@@ -50,7 +53,7 @@ final class FrameMonitor {
         if delta >= 1 {
             let fps = Double(frameCount) / delta
             if FrameWatch.configuration.printFPS {
-                print("[FrameWatch] FPS: \(Int(round(fps)))")
+                logger.info("📋 FPS: \(Int(round(fps)))")
             }
             overlay?.update(fps: fps)
             frameCount = 0

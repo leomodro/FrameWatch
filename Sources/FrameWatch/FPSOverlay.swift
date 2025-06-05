@@ -7,11 +7,11 @@
 
 import UIKit
 
-final class FPSOverlay: UILabel {
+public final class FPSOverlay: UILabel {
     private var containerWindow: UIWindow?
 
     init() {
-        super.init(frame: CGRect(x: 10, y: 10, width: 60, height: 24))
+        super.init(frame: CGRect(x: 10, y: 10, width: 80, height: 50))
         setup()
     }
 
@@ -21,19 +21,35 @@ final class FPSOverlay: UILabel {
     }
 
     private func setup() {
-        self.textColor = .white
         self.font = UIFont.monospacedDigitSystemFont(ofSize: 13, weight: .medium)
-        self.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        self.textColor = .label
+        self.backgroundColor = UIColor.secondarySystemBackground.withAlphaComponent(0.7)
         self.textAlignment = .center
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true
     }
 
     func show() {
-        let window = UIWindow(frame: frame)
-        window.rootViewController = UIViewController()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.tryShow()
+        }
+        
+        NotificationCenter.default.addObserver(forName: UIScene.didActivateNotification, object: nil, queue: .main) { _ in
+            self.tryShow()
+        }
+    }
+    
+    private func tryShow() {
+        guard superview == nil else { return }
+        guard let windowScene = UIApplication.shared
+            .connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+            let window = windowScene.windows.first else {
+            return
+        }
         window.windowLevel = .alert + 1
         window.isHidden = false
+        self.frame.origin = .init(x: 10, y: window.safeAreaInsets.top)
         window.addSubview(self)
         containerWindow = window
     }
