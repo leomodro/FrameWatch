@@ -39,6 +39,17 @@ public final class FPSOverlay: UILabel {
             self.tryShow()
         }
     }
+
+    func update(fps: Double) {
+        self.text = "FPS: \(Int(round(fps)))"
+        self.textColor = FrameWatch.configuration.color(for: fps)
+    }
+
+    func remove() {
+        removeFromSuperview()
+        containerWindow?.isHidden = true
+        containerWindow = nil
+    }
     
     private func tryShow() {
         guard superview == nil else { return }
@@ -55,17 +66,6 @@ public final class FPSOverlay: UILabel {
         containerWindow = window
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         self.addGestureRecognizer(pan)
-    }
-
-    func update(fps: Double) {
-        self.text = "FPS: \(Int(round(fps)))"
-        self.textColor = fps >= 55 ? .green : (fps >= 45 ? .orange : .red)
-    }
-
-    func remove() {
-        removeFromSuperview()
-        containerWindow?.isHidden = true
-        containerWindow = nil
     }
     
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {

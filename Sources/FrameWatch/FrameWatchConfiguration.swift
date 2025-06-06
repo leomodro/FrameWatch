@@ -5,7 +5,7 @@
 //  Created by Leonardo Modro on 04/06/25.
 //
 
-import Foundation
+import UIKit
 
 public struct FrameWatchConfiguration {
     public var fpsTarget: Int = 50
@@ -37,5 +37,19 @@ public struct FrameWatchConfiguration {
     /// For low-end device simulation or relaxed frame tolerance (30 FPS target)
     public static var lowPower: FrameWatchConfiguration {
         FrameWatchConfiguration(fpsTarget: 30)
+    }
+    
+    // MARK: - Helpers
+    public func color(for fps: Double) -> UIColor {
+        let percentage = fps / Double(fpsTarget)
+        
+        switch percentage {
+        case let p where p >= 0.9:
+            return .systemGreen
+        case let p where p >= 0.75:
+            return .systemOrange
+        default:
+            return .systemRed
+        }
     }
 }
