@@ -7,7 +7,8 @@
 
 import UIKit
 
-public final class FPSOverlay: UILabel {
+/// A floating HUD overlay that displays FPS and provides a toggleable timeline view.
+final class FPSOverlay: UILabel {
     private var containerWindow: UIWindow?
 
     init() {
@@ -30,6 +31,7 @@ public final class FPSOverlay: UILabel {
         self.isUserInteractionEnabled = true
     }
 
+    /// Shows the overlay in the current key window.
     func show() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.tryShow()
@@ -40,11 +42,13 @@ public final class FPSOverlay: UILabel {
         }
     }
 
+    /// Updates the FPS label and adjusts its color based on configured threshold.
     func update(fps: Double) {
         self.text = "FPS: \(Int(round(fps)))"
         self.textColor = FrameWatch.configuration.color(for: fps)
     }
 
+    /// Hides the overlay from the screen.
     func remove() {
         removeFromSuperview()
         containerWindow?.isHidden = true

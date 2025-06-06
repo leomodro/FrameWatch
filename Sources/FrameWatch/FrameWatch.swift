@@ -8,11 +8,18 @@
 import Foundation
 import os
 
+/// FrameWatch is the main entry point for enabling frame performance monitoring in your app.
 public enum FrameWatch {
-    public static var configuration = FrameWatchConfiguration()
+    /// The current configuration used by FrameWatch.
+    ///
+    /// Customize this before calling `start()`. Modifying it at runtime updates behavior dynamically.
+    public static var configuration = Configuration()
     
     private static let logger = Logger(subsystem: "com.leomodro.FrameWatch", category: "FrameWatch")
 
+    /// Starts monitoring FPS and dropped frames.
+    ///
+    /// You should call this early in your app’s lifecycle (e.g., `AppDelegate`, `@main`, or `SceneDelegate`).
     public static func start() {
         #if DEBUG
         FrameMonitor.shared.start()
