@@ -27,6 +27,7 @@ public final class FPSOverlay: UILabel {
         self.textAlignment = .center
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true
+        self.isUserInteractionEnabled = true
     }
 
     func show() {
@@ -52,6 +53,8 @@ public final class FPSOverlay: UILabel {
         self.frame.origin = .init(x: 10, y: window.safeAreaInsets.top)
         window.addSubview(self)
         containerWindow = window
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        self.addGestureRecognizer(pan)
     }
 
     func update(fps: Double) {
@@ -63,5 +66,11 @@ public final class FPSOverlay: UILabel {
         removeFromSuperview()
         containerWindow?.isHidden = true
         containerWindow = nil
+    }
+    
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: self.superview)
+        self.center = CGPoint(x: self.center.x + translation.x, y: self.center.y + translation.y)
+        gesture.setTranslation(.zero, in: self.superview)
     }
 }

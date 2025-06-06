@@ -18,6 +18,8 @@ final class FrameMonitor {
 
     private var overlay: FPSOverlay?
     
+    public var onDrop: ((TimeInterval, Double, Int) -> Void)?
+    
     private let logger = Logger(subsystem: "com.leomodro.FrameWatch", category: "FrameMonitor")
 
     private init() {}
@@ -37,6 +39,8 @@ final class FrameMonitor {
     func stop() {
         displayLink?.invalidate()
         displayLink = nil
+        lastTimestamp = 0
+        frameCount = 0
         overlay?.remove()
         overlay = nil
     }
@@ -48,16 +52,26 @@ final class FrameMonitor {
         }
 
         frameCount += 1
-        let delta = link.timestamp - lastTimestamp
+        let currentTime = link.timestamp
+        let elapsedTime = currentTime - lastTimestamp
+        
+        if elapsedTime >= 1 {
+            let fps = Double(frameCount) / elapsedTime
+            let expectedFrames = elapsedTime * Double(FrameWatch.configuration.fpsTarget)
+            let droppedFrames = max(Int(expectedFrames.rounded()) - frameCount, 0)
 
-        if delta >= 1 {
-            let fps = Double(frameCount) / delta
             if FrameWatch.configuration.printFPS {
-                logger.info("📋 FPS: \(Int(round(fps)))")
+                logger.info("📋 FPS: \(Int(round(fps))), Dropped Frames: \(droppedFrames)")
             }
+
             overlay?.update(fps: fps)
+            
+            if droppedFrames > 0 {
+                Diagnostics.shared.recordDrop(duration: elapsedTime, frameRate: fps, droppedFrames: droppedFrames)
+            }
+
             frameCount = 0
-            lastTimestamp = link.timestamp
+            lastTimestamp = currentTime
         }
     }
 }

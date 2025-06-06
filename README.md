@@ -60,6 +60,19 @@ FrameWatch.configuration = .init(
 )
 ```
 
+You can also use convenience presets:
+
+```swift
+// 🎯 Default (50 FPS target)
+FrameWatch.configuration = .default
+
+// 🚀 High Performance (60 FPS target)
+FrameWatch.configuration = .highPerformance
+
+// 🔋 Low Power Mode (30 FPS target)
+FrameWatch.configuration = .lowPower
+```
+
 ---
 
 ## 🖼️ Overlay Example
