@@ -54,8 +54,8 @@ public struct FrameWatchTimelineView: View {
 
 #Preview {
     FrameWatchTimelineView(values: [
-        FrameDropEvent(timestamp: Date(), duration: 0.016, frameRate: 60, droppedFrame: 0, screenshotPath: nil),
-        FrameDropEvent(timestamp: Date(), duration: 0.09, frameRate: 30, droppedFrame: 4, screenshotPath: nil),
-        FrameDropEvent(timestamp: Date(), duration: 0.12, frameRate: 15, droppedFrame: 9, screenshotPath: nil)
+        FrameDropEvent(timestamp: Date(), duration: 0.016, frameRate: 60, droppedFrame: 0, screenshotFileName: nil),
+        FrameDropEvent(timestamp: Date(), duration: 0.09, frameRate: 30, droppedFrame: 4, screenshotFileName: nil),
+        FrameDropEvent(timestamp: Date(), duration: 0.12, frameRate: 15, droppedFrame: 9, screenshotFileName: nil)
     ])
 }

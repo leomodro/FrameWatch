@@ -8,9 +8,17 @@
 import UIKit
 
 public struct FrameWatchConfiguration {
+    /// Desired FPS target. Default is 50
     public var fpsTarget: Int = 50
+    /// Whether FrameWatch should log to console FPS information
     public var printFPS: Bool = true
+    /// Whether FrameWatch will show overlay with realtime FPS information
     public var showOverlay: Bool = true
+    /// Whether to capture screenshots on frame drops (default: true)
+    public var captureScreenshots: Bool = true
+    /// Directory where screenshots should be saved (default: temporary)
+    public var screenshotDirectory: URL? = nil
+
     
     public var frameDropThreshold: Double {
         return 1.0 / Double(fpsTarget)

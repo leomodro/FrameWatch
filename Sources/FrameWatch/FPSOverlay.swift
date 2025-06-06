@@ -11,7 +11,7 @@ public final class FPSOverlay: UILabel {
     private var containerWindow: UIWindow?
 
     init() {
-        super.init(frame: CGRect(x: 10, y: 10, width: 80, height: 50))
+        super.init(frame: CGRect(x: 10, y: 10, width: 100, height: 60))
         setup()
     }
 
@@ -21,9 +21,9 @@ public final class FPSOverlay: UILabel {
     }
 
     private func setup() {
-        self.font = UIFont.monospacedDigitSystemFont(ofSize: 13, weight: .medium)
+        self.font = UIFont.monospacedDigitSystemFont(ofSize: 15, weight: .medium)
         self.textColor = .label
-        self.backgroundColor = UIColor.secondarySystemBackground.withAlphaComponent(0.7)
+        self.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         self.textAlignment = .center
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true

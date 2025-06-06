@@ -16,7 +16,7 @@ public enum FrameWatch {
     public static func start() {
         #if DEBUG
         FrameMonitor.shared.start()
-        logger.info("FrameWatch started with FPS target: \(configuration.fpsTarget)")
+        logger.info("🖼️ FrameWatch started with FPS target: \(configuration.fpsTarget)")
         #endif
     }
 

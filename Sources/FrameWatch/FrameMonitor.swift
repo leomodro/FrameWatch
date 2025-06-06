@@ -67,7 +67,7 @@ final class FrameMonitor {
             overlay?.update(fps: fps)
             
             if droppedFrames > 0 {
-                Diagnostics.shared.recordDrop(duration: elapsedTime, frameRate: fps, droppedFrames: droppedFrames)
+                ScreenshotManager.shared.captureIfNeeded(duration: elapsedTime, frameRate: fps, droppedFrames: droppedFrames)
             }
 
             frameCount = 0
