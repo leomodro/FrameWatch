@@ -8,8 +8,14 @@
 import UIKit
 
 /// A floating HUD overlay that displays FPS and provides a toggleable timeline view.
-final class FPSOverlay: UILabel {
+final class FPSOverlay: UIView {
     private var containerWindow: UIWindow?
+    private var fpsLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.font = UIFont.monospacedDigitSystemFont(ofSize: 15, weight: .medium)
+        lbl.textAlignment = .center
+        return lbl
+    }()
 
     init() {
         super.init(frame: CGRect(x: 10, y: 10, width: 100, height: 60))
@@ -22,13 +28,23 @@ final class FPSOverlay: UILabel {
     }
 
     private func setup() {
-        self.font = UIFont.monospacedDigitSystemFont(ofSize: 15, weight: .medium)
-        self.textColor = .label
-        self.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        self.textAlignment = .center
+        self.backgroundColor = UIColor.clear //UIColor.black.withAlphaComponent(0.7)
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true
         self.isUserInteractionEnabled = true
+        let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.systemThinMaterialDark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = self.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(blurEffectView)
+        
+        fpsLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(fpsLabel)
+        NSLayoutConstraint.activate([
+            fpsLabel.heightAnchor.constraint(equalTo: self.heightAnchor),
+            fpsLabel.widthAnchor.constraint(equalTo: self.widthAnchor)
+        ])
+
     }
 
     /// Shows the overlay in the current key window.
@@ -44,8 +60,8 @@ final class FPSOverlay: UILabel {
 
     /// Updates the FPS label and adjusts its color based on configured threshold.
     func update(fps: Double) {
-        self.text = "FPS: \(Int(round(fps)))"
-        self.textColor = FrameWatch.configuration.color(for: fps)
+        fpsLabel.text = "FPS: \(Int(round(fps)))"
+        fpsLabel.textColor = FrameWatch.configuration.color(for: fps)
     }
 
     /// Hides the overlay from the screen.
