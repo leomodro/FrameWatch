@@ -20,7 +20,7 @@ FrameWatch helps you spot UI performance issues like dropped frames, stutter, an
 ### ✅ Install via Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/yourname/FrameWatch.git", from: "0.1.0")
+.package(url: "https://github.com/leomodro/FrameWatch.git", from: "0.1.0")
 ```
 
 ---
@@ -33,8 +33,7 @@ import FrameWatch
 @main
 struct MyApp: App {
     init() {
-        FrameWatch.configuration.printFPS = true
-        FrameWatch.configuration.showOverlay = true
+        FrameWatch.configuration = .default
         FrameWatch.start()
     }
 
@@ -54,9 +53,11 @@ Customize how FrameWatch behaves:
 
 ```swift
 FrameWatch.configuration = .init(
-    frameDropThreshold: 1.0 / 50.0, // 50 FPS target
+    fpsTarget: 50.0,                // 50 FPS target
     printFPS: true,                 // Log FPS to console
-    showOverlay: true              // Show on-screen overlay
+    showOverlay: true,              // Show on-screen overlay
+    shouldCaptureScreenshot: true,  // Capture screenshots of frames dropped
+    screenshotDirectory: nil        // Set a custom directory to store screenshots
 )
 ```
 
@@ -87,9 +88,6 @@ FrameWatch is released under the [MIT License](LICENSE).
 
 ## 🧠 Roadmap Highlights
 
-* View hierarchy snapshots on frame drops
-* Export metrics to JSON or remote
-* SwiftUI overlay integration
 * Scroll jank detector
 * Performance timeline view
 

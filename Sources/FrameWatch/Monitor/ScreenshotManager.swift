@@ -22,7 +22,7 @@ final class ScreenshotManager {
         let timestamp = now.timeIntervalSince1970
         Diagnostics.shared.recordDrop(now, duration: duration, frameRate: frameRate, droppedFrames: droppedFrames)
         
-        guard FrameWatch.configuration.captureScreenshots else { return }
+        guard FrameWatch.configuration.shouldCaptureScreenshot else { return }
         guard timestamp - lastCaptureTime >= minInterval else { return }
 
         lastCaptureTime = timestamp

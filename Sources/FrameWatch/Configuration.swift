@@ -16,7 +16,7 @@ public struct Configuration {
     /// Whether FrameWatch will show overlay with realtime FPS information
     public var showOverlay: Bool = true
     /// Whether to capture screenshots on frame drops (default: true)
-    public var captureScreenshots: Bool = true
+    public var shouldCaptureScreenshot: Bool = true
     /// Directory where screenshots should be saved (default: temporary)
     public var screenshotDirectory: URL? = nil
 
@@ -30,10 +30,12 @@ public struct Configuration {
     ///   - fpsTarget: Desired FPS target
     ///   - printFPS: Enable console logging.
     ///   - showOverlay: Show the overlay HUD.
-    public init(fpsTarget: Int = 50, printFPS: Bool = true, showOverlay: Bool = true) {
+    public init(fpsTarget: Int = 50, printFPS: Bool = true, showOverlay: Bool = true, shouldCaptureScreenshots: Bool = true, screenshotDirectory: URL? = nil) {
         self.fpsTarget = fpsTarget
         self.printFPS = printFPS
         self.showOverlay = showOverlay
+        self.shouldCaptureScreenshot = shouldCaptureScreenshots
+        self.screenshotDirectory = screenshotDirectory
     }
     
     // MARK: - Presets
