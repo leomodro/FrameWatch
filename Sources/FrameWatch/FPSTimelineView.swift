@@ -8,57 +8,54 @@
 import SwiftUI
 import Combine
 
-struct FPSTimelineView: View {
-    @State private var events: [FrameDropEvent] = []
+public struct FrameWatchTimelineView: View {
+    @State var events: [FrameDropEvent] = []
     @State private var timer: AnyCancellable?
+    
+    public init(values: [FrameDropEvent]) {
+        _events = State(initialValue: values)
+    }
 
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("📊 Frame Drop Timeline")
-                .font(.headline)
-
-            if events.isEmpty {
-                Text("No frame drops recorded yet.")
-                    .foregroundColor(.secondary)
-            } else {
-                ScrollView {
-                    ForEach(events.indices, id: \.self) { index in
-                        let event = events[index]
-                        HStack {
-                            if #available(iOS 15.0, *) {
-                                Text(event.timestamp.formatted(date: .omitted, time: .standard))
-                                    .font(.caption.monospaced())
-                            } else {
-                                // Fallback on earlier versions
-                            }
-                            Spacer()
-                            Text("Duration: \(String(format: "%.2f", event.duration))s")
-                            Text("FPS: \(Int(event.frameRate))")
-                                .foregroundColor(event.frameRate < 45 ? .red : .green)
+    public var body: some View {
+        ScrollView(.horizontal) {
+            HStack(alignment: .bottom, spacing: 4) {
+                ForEach(events.indices, id: \.self) { i in
+                    let event = events[i]
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(severityColor(for: event.duration))
+                        .frame(width: 10, height: CGFloat(event.duration * 1000))
+                        .onTapGesture {
+                            print("Dropped frames \(event.droppedFrames)")
                         }
-                        .padding(.vertical, 4)
-                        Divider()
-                    }
                 }
-                .frame(maxHeight: 300)
+            }
+            .padding()
+            .onAppear {
+                timer = Timer.publish(every: 2.0, on: .main, in: .common)
+                    .autoconnect()
+                    .sink { _ in
+                        self.events = Diagnostics.shared.droppedFramesEvent
+                    }
+            }
+            .onDisappear {
+                timer?.cancel()
             }
         }
-        .padding()
-        .onAppear {
-            timer = Timer.publish(every: 2.0, on: .main, in: .common)
-                .autoconnect()
-                .sink { _ in
-                    self.events = Diagnostics.shared.droppedFrames
-                }
-        }
-        .onDisappear {
-            timer?.cancel()
+    }
+
+    func severityColor(for duration: TimeInterval) -> Color {
+        switch duration {
+        case 0..<0.05: return .green
+        case 0.05..<0.1: return .yellow
+        default: return .red
         }
     }
 }
 
-struct FPSTimelineView_Previews: PreviewProvider {
-    static var previews: some View {
-        FPSTimelineView()
-    }
+#Preview {
+    FrameWatchTimelineView(values: [
+        FrameDropEvent(timestamp: Date(), duration: 0.016, frameRate: 60, droppedFrame: 0, screenshotPath: nil),
+        FrameDropEvent(timestamp: Date(), duration: 0.09, frameRate: 30, droppedFrame: 4, screenshotPath: nil),
+        FrameDropEvent(timestamp: Date(), duration: 0.12, frameRate: 15, droppedFrame: 9, screenshotPath: nil)
+    ])
 }
