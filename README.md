@@ -16,6 +16,7 @@ FrameWatch helps you spot UI performance issues like dropped frames, stutter, an
 * ✅ Detect and log dropped frames
 * ✅ Configurable frame threshold
 * ✅ Optional floating overlay HUD
+* ✅ Timeline and screenshots of dropped frames
 * ✅ Zero dependencies — Swift Package Manager native
 * ✅ Debug-only usage (safe for production)
 
@@ -84,6 +85,7 @@ FrameWatch.configuration = .lowPower
 
 ## 🖼️ Overlay Example
 
+FPS overlay is draggable and you can also tap it to view timeline (with screenshots) of frames dropped
 ![FPS overlay example](/Overlay.png?raw=true "FPS overlay example")
 
 ---
@@ -97,6 +99,5 @@ FrameWatch is released under the [MIT License](LICENSE).
 ## 🧠 Roadmap Highlights
 
 * Scroll jank detector
-* Performance timeline view
 
 ---
