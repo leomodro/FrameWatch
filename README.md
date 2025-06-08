@@ -85,6 +85,8 @@ FrameWatch.configuration = .lowPower
 
 ## 🖼️ Overlay Example
 
+![FPS overlay example](/Overlay.png?raw=true "FPS overlay example")
+
 ---
 
 ## 📜 License
