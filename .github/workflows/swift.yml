@@ -27,7 +27,3 @@ jobs:
         -scheme FrameWatch \
         -destination 'platform=iOS Simulator,name=iPhone 16' \
         | xcpretty
-#    - name: Build
-#      run: swift build -v
-#    - name: Run tests
-#      run: swift test -v
