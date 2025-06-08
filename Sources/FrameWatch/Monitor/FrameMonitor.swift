@@ -13,7 +13,7 @@ final class FrameMonitor {
     static let shared = FrameMonitor()
     
     private var displayLink: CADisplayLink?
-    private var lastTimestamp: CFTimeInterval = 0
+    private(set) var lastTimestamp: CFTimeInterval = 0
     private var frameCount = 0
 
     private var overlay: FPSOverlay?
@@ -28,8 +28,10 @@ final class FrameMonitor {
         guard displayLink == nil else { return }
         
         if FrameWatch.configuration.showOverlay {
-            overlay = FPSOverlay()
-            overlay?.show()
+            DispatchQueue.main.async {
+                self.overlay = FPSOverlay()
+                self.overlay?.show()
+            }
         }
 
         displayLink = CADisplayLink(target: self, selector: #selector(tick))
@@ -41,8 +43,10 @@ final class FrameMonitor {
         displayLink = nil
         lastTimestamp = 0
         frameCount = 0
-        overlay?.remove()
-        overlay = nil
+        DispatchQueue.main.async {
+            self.overlay?.remove()
+            self.overlay = nil
+        }
     }
 
     @objc private func tick(link: CADisplayLink) {
