@@ -5,7 +5,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![SPM Compatible](https://img.shields.io/badge/SPM-Compatible-brightgreen.svg)](https://swiftpackageindex.com)
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/leomodro/FrameWatch/releases)
-[!Swift Tests](https://github.com/leomodro/FrameWatch/actions/workflows/tests.yml/badge.svg)
 
 **Real-time frame drop and FPS monitor for iOS apps.**
 
