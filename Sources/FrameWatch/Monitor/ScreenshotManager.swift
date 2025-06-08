@@ -43,7 +43,7 @@ final class ScreenshotManager {
                 let imageName = filenameBase + ".jpg"
                 let jsonName = filenameBase + ".json"
 
-                let directory = self.ensureFrameWatchDirectory()
+                let directory = FileManager.default.frameWatchDirectory
                 let imageURL = directory.appendingPathComponent(imageName)
                 let jsonURL = directory.appendingPathComponent(jsonName)
 
@@ -63,16 +63,5 @@ final class ScreenshotManager {
                 }
             }
         }
-    }
-    
-    private func ensureFrameWatchDirectory() -> URL {
-        let baseDir = FrameWatch.configuration.screenshotDirectory ?? FileManager.default.temporaryDirectory
-        let frameWatchDir = baseDir.appendingPathComponent("FrameWatch", isDirectory: true)
-
-        if !FileManager.default.fileExists(atPath: frameWatchDir.path) {
-            try? FileManager.default.createDirectory(at: frameWatchDir, withIntermediateDirectories: true)
-        }
-
-        return frameWatchDir
     }
 }

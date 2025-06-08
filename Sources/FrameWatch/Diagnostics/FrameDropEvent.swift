@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a single dropped frame event captured by FrameWatch.
-public struct FrameDropEvent: Codable {
+public struct FrameDropEvent: Codable, Hashable {
     /// Timestamp of when the drop occurred.
     public let timestamp: Date
     /// Duration of dropped frame
