@@ -20,8 +20,14 @@ final class FrameMonitor {
     public var onDrop: ((TimeInterval, Int) -> Void)?
 
     private init() {}
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
     func start() {
+        NotificationCenter.default.addObserver(self, selector: #selector(appEnteredBackground), name: .background, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appEnteredForeground), name: .foreground, object: nil)
         guard displayLink == nil else { return }
         
         if FrameWatch.configuration.showOverlay {
@@ -33,16 +39,6 @@ final class FrameMonitor {
 
         displayLink = CADisplayLink(target: self, selector: #selector(tick))
         displayLink?.add(to: .main, forMode: .common)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appEnteredBackground),
-                                               name: UIApplication.didEnterBackgroundNotification,
-                                               object: nil)
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(appEnteredForeground),
-                                               name: UIApplication.willEnterForegroundNotification,
-                                               object: nil)
     }
 
     func stop() {
@@ -99,11 +95,13 @@ final class FrameMonitor {
     }
     
     @objc private func appEnteredForeground() {
+        guard displayLink != nil else { return }
         logger.debug("App entered foreground — Resuming monitoring")
         isPaused(false)
     }
     
     @objc private func appEnteredBackground() {
+        guard displayLink != nil else { return }
         logger.debug("App entered background — Pausing monitoring")
         isPaused(true)
     }

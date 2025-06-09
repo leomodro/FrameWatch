@@ -30,36 +30,14 @@ public struct FrameWatchTimelineView: View {
         
         NavigationView {
             ScrollView(.vertical) {
-                VStack(spacing: 0) {
-                    ZStack(alignment: .bottomLeading) {
-                        HStack(alignment: .bottom, spacing: 8) {
-                            yAxis(maxDuration: maxDuration)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(alignment: .bottom, spacing: 4) {
-                                    chart(with: maxDuration)
-                                }
-                                .padding(.vertical, 15)
-                            }
-                        }
-                        
-                        tooltip
+                if events.isEmpty {
+                    emptyState
+                } else {
+                    VStack(spacing: 0) {
+                        eventSection(maxDuration)
+                        screenshotSection
+                        Spacer()
                     }
-                    .padding()
-                    .frame(height: maxBarHeight + 60)
-                    
-                    if !events.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Screenshots")
-                                .font(.title2)
-                                .bold()
-                                .padding(.leading, 16)
-                            screenshotGrid
-                        }
-                        .padding(.vertical, 24)
-                    }
-                    
-                    Spacer()
                 }
             }
             .onAppear {
@@ -81,6 +59,42 @@ public struct FrameWatchTimelineView: View {
 
 // MARK: - View Components
 extension FrameWatchTimelineView {
+    var emptyState: some View {
+        VStack(spacing: 0) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(Color(UIColor.systemGreen))
+                .font(.system(size: 40, weight: .bold))
+                .padding(.bottom, 16)
+            Text("All good here!")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding(.bottom, 4)
+            Text("No events recorded yet")
+                .font(.subheadline)
+                .fontWeight(.light)
+        }
+        .padding(.top, 48)
+    }
+    
+    @ViewBuilder func eventSection(_ maxDuration: TimeInterval) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            HStack(alignment: .bottom, spacing: 8) {
+                yAxis(maxDuration: maxDuration)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(alignment: .bottom, spacing: 4) {
+                        chart(with: maxDuration)
+                    }
+                    .padding(.vertical, 15)
+                }
+            }
+            
+            tooltip
+        }
+        .padding()
+        .frame(height: maxBarHeight + 60)
+    }
+    
     @ViewBuilder func yAxis(maxDuration: TimeInterval) -> some View {
         VStack(alignment: .trailing, spacing: 0) {
             ForEach((0...tickCount).reversed(), id: \.self) { i in
@@ -121,6 +135,19 @@ extension FrameWatchTimelineView {
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.3), value: showTooltip)
             .offset(x: CGFloat(index) * 16 + 20)
+        }
+    }
+    
+    @ViewBuilder var screenshotSection: some View {
+        if !events.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Screenshots")
+                    .font(.title2)
+                    .bold()
+                    .padding(.leading, 16)
+                screenshotGrid
+            }
+            .padding(.vertical, 24)
         }
     }
     
@@ -171,6 +198,7 @@ extension FrameWatchTimelineView {
     }
 }
 
+// MARK: - Preview
 #Preview {
     FrameWatchTimelineView(values: [
         FrameDropEvent(timestamp: Date(), duration: 0.04, frameRate: 60, droppedFrame: 0, screenshotFileName: nil),
