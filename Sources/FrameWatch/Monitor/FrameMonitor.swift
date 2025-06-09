@@ -12,15 +12,12 @@ import UIKit
 final class FrameMonitor {
     static let shared = FrameMonitor()
     
-    private var displayLink: CADisplayLink?
+    private let logger = Logger(subsystem: "com.leomodro.FrameWatch", category: "FrameMonitor")
+    private(set) var displayLink: CADisplayLink?
     private(set) var lastTimestamp: CFTimeInterval = 0
     private var frameCount = 0
-
     private var overlay: FPSOverlay?
-    
-    public var onDrop: ((TimeInterval, Double, Int) -> Void)?
-    
-    private let logger = Logger(subsystem: "com.leomodro.FrameWatch", category: "FrameMonitor")
+    public var onDrop: ((TimeInterval, Int) -> Void)?
 
     private init() {}
 
@@ -36,17 +33,38 @@ final class FrameMonitor {
 
         displayLink = CADisplayLink(target: self, selector: #selector(tick))
         displayLink?.add(to: .main, forMode: .common)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(appEnteredBackground),
+                                               name: UIApplication.didEnterBackgroundNotification,
+                                               object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(appEnteredForeground),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
     }
 
     func stop() {
         displayLink?.invalidate()
         displayLink = nil
-        lastTimestamp = 0
-        frameCount = 0
+        resetTiming()
         DispatchQueue.main.async {
             self.overlay?.remove()
             self.overlay = nil
         }
+    }
+    
+    func isPaused(_ isPaused: Bool) {
+        DispatchQueue.global(qos: .background).async {
+            self.resetTiming()
+            self.displayLink?.isPaused = isPaused
+        }
+    }
+    
+    private func resetTiming() {
+        frameCount = 0
+        lastTimestamp = 0
     }
 
     @objc private func tick(link: CADisplayLink) {
@@ -71,11 +89,22 @@ final class FrameMonitor {
             overlay?.update(fps: fps)
             
             if droppedFrames > 0 {
+                self.onDrop?(lastTimestamp, droppedFrames)
                 ScreenshotManager.shared.captureIfNeeded(duration: elapsedTime, frameRate: fps, droppedFrames: droppedFrames)
             }
 
             frameCount = 0
             lastTimestamp = currentTime
         }
+    }
+    
+    @objc private func appEnteredForeground() {
+        logger.debug("App entered foreground — Resuming monitoring")
+        isPaused(false)
+    }
+    
+    @objc private func appEnteredBackground() {
+        logger.debug("App entered background — Pausing monitoring")
+        isPaused(true)
     }
 }

@@ -72,6 +72,7 @@ public struct FrameWatchTimelineView: View {
             .onDisappear {
                 timer?.cancel()
                 dismissTask?.cancel()
+                FrameMonitor.shared.isPaused(false)
             }
             .navigationTitle("Timeline")
         }

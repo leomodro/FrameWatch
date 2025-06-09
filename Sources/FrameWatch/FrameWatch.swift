@@ -7,6 +7,7 @@
 
 import Foundation
 import os
+import UIKit
 
 /// FrameWatch is the main entry point for enabling frame performance monitoring in your app.
 public enum FrameWatch {

@@ -117,6 +117,7 @@ final class FPSOverlay: UIView {
     @objc private func didTapOverlay() {
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let action = UIAlertAction(title: "View Timeline", style: .default) { _ in
+            FrameMonitor.shared.isPaused(true)
             let swiftUIView = FrameWatchTimelineView(values: Diagnostics.shared.droppedFramesEvent)
             let hostingController = UIHostingController(rootView: swiftUIView)
             DispatchQueue.main.async {

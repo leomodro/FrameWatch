@@ -4,7 +4,7 @@ import UIKit
 
 @Suite("Configuration")
 struct ConfigurationTests {
-    @Test("Custom Configuration") func configuration_appliesCorrectly() {
+    @Test("Custom Configuration") func appliesCorrectly() {
         let config = Configuration(fpsTarget: 30, screenshotDirectory: URL(string: "file:///Test"))
         FrameWatch.configuration = config
         
@@ -15,13 +15,13 @@ struct ConfigurationTests {
         #expect(FileManager.default.frameWatchDirectory == URL(string: "file:///Test/FrameWatch/"))
     }
     
-    @Test("Defaults") func configuration_defaultsApplied() {
+    @Test("Defaults") func defaultsApplied() {
         #expect(Configuration.default.fpsTarget == 50)
         #expect(Configuration.lowPower.fpsTarget == 30)
         #expect(Configuration.highPerformance.fpsTarget == 60)
     }
     
-    @Test("Color per FPS") func configuration_colorPerFPS() {
+    @Test("Color per FPS") func colorPerFPS() {
         let green = Configuration.default.color(for: 50)
         let red = Configuration.default.color(for: 15)
         let orange = Configuration.default.color(for: 40)
@@ -34,7 +34,7 @@ struct ConfigurationTests {
 
 @Suite("Diagnostics")
 struct DiagnosticsTests {
-    @Test("Record Drop") func diagnostics_recordDrop() {
+    @Test("Record Drop") func recordDrop() {
         Diagnostics.shared.clear()
         Diagnostics.shared.recordDrop(Date(), duration: 0.18, frameRate: 55, droppedFrames: 9)
         
@@ -42,7 +42,7 @@ struct DiagnosticsTests {
         #expect(Diagnostics.shared.droppedFramesEvent.first?.droppedFrames == 9)
     }
     
-    @Test("Update Event") func diagnostics_updateEvent() {
+    @Test("Update Event") func updateEvent() {
         Diagnostics.shared.clear()
         Diagnostics.shared.recordDrop(Date(), duration: 0.18, frameRate: 55, droppedFrames: 9)
         #expect(Diagnostics.shared.droppedFramesEvent.count == 1)
@@ -54,14 +54,35 @@ struct DiagnosticsTests {
     }
 }
 
-@Suite("FrameMonitor")
+@Suite("FrameMonitor", .serialized)
 struct FrameMonitorTests {
-    @Test("Start and Stop") func frameMonitor_startAndStop() async throws {
+    @Test("Start and Stop") func startAndStop() async throws {
         FrameMonitor.shared.start()
         
         try await Task.sleep(nanoseconds: 2_000_000_000)
         #expect(FrameMonitor.shared.lastTimestamp != 0)
         
         FrameWatch.stop()
+    }
+    
+    @Test("Background") func handleBackground() async throws {
+        FrameMonitor.shared.start()
+        
+        // Simulate backgrounding
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        #expect(FrameMonitor.shared.displayLink?.isPaused == true)
+        
+        FrameMonitor.shared.stop()
+    }
+    
+    @Test("Foreground") func handleForeground() async throws {
+        FrameMonitor.shared.start()
+        
+        NotificationCenter.default.post(name: UIApplication.willEnterForegroundNotification, object: nil)
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        #expect(FrameMonitor.shared.displayLink?.isPaused == false)
+        
+        FrameMonitor.shared.stop()
     }
 }
