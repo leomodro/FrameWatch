@@ -28,6 +28,17 @@ final class ScreenshotManager {
         lastCaptureTime = timestamp
         captureScreenshot(timestamp: timestamp, date: now, fps: frameRate, droppedFrames: droppedFrames)
     }
+    
+    func clearScreenshots() {
+        DispatchQueue.global(qos: .background).async {
+            do {
+                try FileManager.default.removeItem(at: FileManager.default.frameWatchDirectory)
+                Diagnostics.shared.clear()
+            } catch {
+                self.logger.error("❌ Error trying to remove files: \(error.localizedDescription)")
+            }
+        }
+    }
 
     private func captureScreenshot(timestamp: TimeInterval, date: Date, fps: Double, droppedFrames: Int) {
         guard let window = UIApplication.shared.windows.first(where: \.isKeyWindow) else { return }

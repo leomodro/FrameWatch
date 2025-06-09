@@ -39,7 +39,7 @@ final class FPSOverlay: UIView {
     }
 
     private func setup() {
-        self.backgroundColor = UIColor.clear
+        self.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         self.layer.cornerRadius = 8
         self.layer.masksToBounds = true
         self.isUserInteractionEnabled = true
@@ -108,6 +108,7 @@ final class FPSOverlay: UIView {
         self.addGestureRecognizer(tap)
     }
     
+    // MARK: - Actions
     @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: self.superview)
         self.center = CGPoint(x: self.center.x + translation.x, y: self.center.y + translation.y)
@@ -116,7 +117,7 @@ final class FPSOverlay: UIView {
     
     @objc private func didTapOverlay() {
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let action = UIAlertAction(title: "View Timeline", style: .default) { _ in
+        let timelineAction = UIAlertAction(title: "View Timeline", style: .default) { _ in
             FrameMonitor.shared.isPaused(true)
             let swiftUIView = FrameWatchTimelineView(values: Diagnostics.shared.droppedFramesEvent)
             let hostingController = UIHostingController(rootView: swiftUIView)
@@ -124,8 +125,12 @@ final class FPSOverlay: UIView {
                 self.containerWindow?.rootViewController?.present(hostingController, animated: true)
             }
         }
+        let clearDirectoryAction = UIAlertAction(title: "Clear Screenshots", style: .destructive) { _ in
+            ScreenshotManager.shared.clearScreenshots()
+        }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-        alert.addAction(action)
+        alert.addAction(timelineAction)
+        alert.addAction(clearDirectoryAction)
         alert.addAction(cancel)
         DispatchQueue.main.async {
             self.containerWindow?.rootViewController?.present(alert, animated: true)
